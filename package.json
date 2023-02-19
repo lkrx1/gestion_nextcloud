@@ -53,5 +53,8 @@
 		"style-loader": ">=2.0.0",
 		"webpack": ">=5.61.1",
 		"webpack-cli": ">=4.5.0"
+	},
+	"dependencies": {
+		"@nextcloud/browserslist-config": "^2.3.0"
 	}
 }
