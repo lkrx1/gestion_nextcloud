@@ -6,7 +6,7 @@ import { getMailServerFrom, getProduitsById, saveNextcloud} from "./modules/ajax
 import { globalConfiguration } from "./modules/mainFunction.mjs";
 import "./listener/main_listener";
 import { Client } from "./objects/client.mjs";
-import { capture, sendMail } from "./pdf";
+import { capture, sendMail, captureDevisFacture } from "./pdf";
 
 window.addEventListener("DOMContentLoaded", function () {
     globalConfiguration();
@@ -15,7 +15,9 @@ window.addEventListener("DOMContentLoaded", function () {
     getProduitsById();
 
     var pdf = document.getElementById("pdf");
-    pdf.addEventListener("click",function(){capture(saveNextcloud);});
+    pdf.addEventListener("click",function(){
+        captureDevisFacture(saveNextcloud, document.getElementById("dateContext").innerText, {nom: document.getElementById("nomcli").innerText, id: document.getElementById("idcli").innerText}, document.getElementById("etp").innerText);
+    });
     
     var mail = document.getElementById("mailGestion");
     mail.addEventListener("click", function(){

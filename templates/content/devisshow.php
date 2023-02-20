@@ -34,6 +34,10 @@
                         <span id="mail"></span><br />
                         <span id="telephone"></span><br />
                         <span id="legal_one"></span><br />
+                        <span id="dateContext" class="d-none"></span>
+                        <span id="nomcli" class="d-none"></span>
+                        <span id="idcli" class="d-none"></span>
+                        <span id="etp" class="d-none"></span>
                     </p>
             </div>
         </div>

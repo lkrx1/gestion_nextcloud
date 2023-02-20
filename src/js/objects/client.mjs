@@ -104,10 +104,14 @@ export class Client {
     }).done(function (response, code) {
         $.each(JSON.parse(response), function (arrayID, myresp) {
             $("#nomprenom").html(myresp.prenom + ' ' + myresp.nom);
+            $("#nomcli").html(myresp.prenom.toUpperCase() + myresp.nom.toUpperCase());
             $("#nomprenom").attr('data-id', id);
             $("#entreprise").html(myresp.entreprise);
+            $("#etp").html(myresp.entreprise);
             $("#adresse").html(myresp.adresse);
             $("#mail").html(myresp.mail);
+            $("#idcli").html(myresp.id);
+            $('#dateContext').html(myresp.date);
             $("#telephone").html(myresp.telephone);
             $("#legal_one").html(myresp.legal_one);
             $("#pdf").attr("data-folder", myresp.num);
