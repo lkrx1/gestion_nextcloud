@@ -1,6 +1,6 @@
-import "@nextcloud/dialogs/styles/toast.scss";
+import "@nextcloud/dialogs/dist/index.css";
 import "datatables.net-dt/css/jquery.dataTables.css";
-import "../css/mycss.less";
+import "../css/mycss.css";
 
 import { getMailServerFrom, getProduitsById, saveNextcloud} from "./modules/ajaxRequest.mjs";
 import { globalConfiguration } from "./modules/mainFunction.mjs";

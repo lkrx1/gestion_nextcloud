@@ -1,5 +1,5 @@
-import "@nextcloud/dialogs/styles/toast.scss";
-import "../css/mycss.less";
+import "@nextcloud/dialogs/dist/index.css";
+import "../css/mycss.css";
 
 import { getAnnualTurnoverPerMonthNoVat} from "./modules/ajaxRequest.mjs";
 import { cur, globalConfiguration } from "./modules/mainFunction.mjs";

@@ -1,5 +1,5 @@
-import "@nextcloud/dialogs/styles/toast.scss";
-import "../css/mycss.less";
+import "@nextcloud/dialogs/dist/index.css";
+import "../css/mycss.css";
 import { globalConfiguration } from "./modules/mainFunction.mjs";
 import "./listener/main_listener";
 
