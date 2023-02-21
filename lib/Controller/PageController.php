@@ -432,8 +432,10 @@ class PageController extends Controller {
 				$factures = json_decode($this->myDb->getFactures($this->idNextcloud));
 				foreach ($factures as $key => $facture) {
 					$facture_temp = array(
+						'num' => $facture->num,
 						'nomcli' => $facture->entreprise,
 						'date' => $facture->date_paiement,
+						'defunt' => $facture->nom.' '.$facture->prenom,
 						'montant_htc' => 0,
 						'tva' => $current_config[0]->tva_default,
 						'montant_tva' => 0,
@@ -474,9 +476,9 @@ class PageController extends Controller {
 						$this->storage->newFolder($clean_folder);
 					} catch(\OCP\Files\NotPermittedException $e) { }
 					foreach ($annee as $key_mois => $mois) {
-						$fec_temp = 'CLIENT'.TAB1.'DATE'.TAB1.'MONTANTHTC'.TAB1.'TVA'.TAB1.'MONTANTTVA'.TAB1.'MONTANTTTC'.PHP_EOL;
+						$fec_temp = 'NUMERO'.TAB1.'CLIENT'.TAB1.'DEFUNT'.TAB1.'DATE'.TAB1.'MONTANTHTC'.TAB1.'TVA'.TAB1.'MONTANTTVA'.TAB1.'MONTANTTTC'.PHP_EOL;
 						foreach ($mois as $key => $facture) {
-							$fec_temp = $fec_temp.$facture['nomcli'].TAB1.$facture['date'].TAB1.$facture['montant_htc'].TAB1.$facture['tva'].TAB1.$facture['montant_tva'].TAB1.$facture['montant_ttc'].PHP_EOL;
+							$fec_temp = $fec_temp.$facture['num'].TAB1.$facture['nomcli'].TAB1.$facture['defunt'].TAB1.$facture['date'].TAB1.$facture['montant_htc'].TAB1.$facture['tva'].TAB1.$facture['montant_tva'].TAB1.$facture['montant_ttc'].PHP_EOL;
 						}
 						$ff = $clean_folder.'FEC_'.$key_mois.'_'.$key_annee.'.txt';
 						$this->storage->newFile($ff);
