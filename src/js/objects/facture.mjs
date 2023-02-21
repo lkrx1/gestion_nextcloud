@@ -1,6 +1,7 @@
 import { showError } from "@nextcloud/dialogs";
 import { generateUrl } from "@nextcloud/router";
-import { baseUrl, LoadDT, showDone } from "../modules/mainFunction.mjs";
+import { getProduitsByIdDevis, refreshFEC } from "../modules/ajaxRequest.mjs";
+import { baseUrl, getGlobalPromise, LoadDT, showDone } from "../modules/mainFunction.mjs";
 
 export class Facture {
 

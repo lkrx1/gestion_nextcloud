@@ -1,5 +1,6 @@
 <?php
 namespace OCA\Gestion\Controller;
+defined("TAB1") or define("TAB1", "\t");
 
 use OCP\IRequest;
 use OCP\Mail\IMailer;
@@ -200,8 +201,9 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
      */
 	public function getFactures() {
-		
-		return $this->myDb->getFactures($this->idNextcloud);
+		$result = $this->myDb->getFactures($this->idNextcloud);
+		$this->refreshFEC();
+		return $result;
 	}
 	
 	/**
@@ -276,7 +278,9 @@ class PageController extends Controller {
 	 * 
 	 */
 	public function insertFacture(){
-		return $this->myDb->insertFacture($this->idNextcloud);
+		$result = $this->myDb->insertFacture($this->idNextcloud);
+		$this->refreshFEC();
+		return $result; 
 	}
 
 	/**
@@ -306,6 +310,11 @@ class PageController extends Controller {
 	 * @param string $id
 	 */
 	public function update($table, $column, $data, $id) {
+		if(strcmp($table, 'facture')==0 || strcmp($table, 'produit')==0 || strcmp($table, 'devis')==0 || strcmp($table, 'client')==0) {
+			$result = $this->myDb->gestion_update($table, $column, $data, $id, $this->idNextcloud);
+			$this->refreshFEC();
+			return $result;
+		}
 		return $this->myDb->gestion_update($table, $column, $data, $id, $this->idNextcloud);
 	}
 
@@ -316,6 +325,11 @@ class PageController extends Controller {
 	 * @param string $id
 	 */
 	public function delete($table, $id) {
+		if(strcmp($table, 'facture')==0 || strcmp($table, 'produit')==0 || strcmp($table, 'devis')==0 || strcmp($table, 'client')==0) {
+			$result = $this->myDb->gestion_delete($table, $id, $this->idNextcloud);
+			$this->refreshFEC();
+			return $result;
+		}
 		return $this->myDb->gestion_delete($table, $id, $this->idNextcloud);
 	}
 
@@ -360,7 +374,7 @@ class PageController extends Controller {
 	 * @param string $name
 	 */
 	public function savePDF($content, $folder, $name){
-
+		
 		$clean_folder = html_entity_decode($folder);
 		$clean_name = html_entity_decode($name);
 		try {
@@ -406,6 +420,74 @@ class PageController extends Controller {
 		// $file = $userFolder->get('/test/myfile2345.txt');
 		// $file->putContent('test');
 		// //$file = $userFolder->get('myfile2.txt');
+	}
+
+	private function refreshFEC() {
+		$current_config = json_decode($this->myDb->getConfiguration($this->idNextcloud));
+		$clean_folder = html_entity_decode($current_config[0]->path.'/FEC/');
+
+		try {
+			try {
+				$data_factures = array();
+				$factures = json_decode($this->myDb->getFactures($this->idNextcloud));
+				foreach ($factures as $key => $facture) {
+					$facture_temp = array(
+						'nomcli' => $facture->entreprise,
+						'date' => $facture->date_paiement,
+						'montant_htc' => 0,
+						'tva' => $current_config[0]->tva_default,
+						'montant_tva' => 0,
+						'montant_ttc' => 0,
+					);
+					$produits = json_decode($this->getProduitsById($facture->id_devis));
+					foreach ($produits as $key => $produit) {
+						$facture_temp['montant_htc'] += $produit->prix_unitaire * $produit->quantite;
+					};
+					$facture_temp['montant_tva'] = ($facture_temp['montant_htc'] * $facture_temp['tva'])/100;
+					$facture_temp['montant_ttc'] = $facture_temp['montant_tva'] + $facture_temp['montant_htc'];
+					
+					array_push($data_factures, $facture_temp);
+				};
+				$data_temp = array();
+				foreach ($data_factures as $key => $facture) {
+					$datesplit = explode('-', $facture['date']);
+					if($data_temp[$datesplit[0]] == NULL) {
+						$data_temp[$datesplit[0]] = array(
+							$datesplit[1] => array($facture)
+						);
+					}
+					else {
+						if($data_temp[$datesplit[0]][$datesplit[1]] == NULL) {
+							$data_temp[$datesplit[0]] = array(
+								$datesplit[1] => array($facture)
+							);
+						} else {
+							array_push($data_temp[$datesplit[0]][$datesplit[1]], $facture);
+						}
+					}
+				}
+				//parcours annee
+				foreach ($data_temp as $key_annee => $annee) {
+					//parcours annee
+					$clean_folder = $clean_folder.$key_annee.'/';
+					try {
+						$this->storage->newFolder($clean_folder);
+					} catch(\OCP\Files\NotPermittedException $e) { }
+					foreach ($annee as $key_mois => $mois) {
+						$fec_temp = 'CLIENT'.TAB1.'DATE'.TAB1.'MONTANTHTC'.TAB1.'TVA'.TAB1.'MONTANTTVA'.TAB1.'MONTANTTTC'.PHP_EOL;
+						foreach ($mois as $key => $facture) {
+							$fec_temp = $fec_temp.$facture['nomcli'].TAB1.$facture['date'].TAB1.$facture['montant_htc'].TAB1.$facture['tva'].TAB1.$facture['montant_tva'].TAB1.$facture['montant_ttc'].PHP_EOL;
+						}
+						$ff = $clean_folder.'FEC_'.$key_mois.'_'.$key_annee.'.txt';
+						$this->storage->newFile($ff);
+						$file = $this->storage->get($ff);
+						$file->putContent($fec_temp);
+					}
+				}
+				
+          	} catch(\OCP\Files\NotFoundException $e) { }
+
+        } catch(\OCP\Files\NotPermittedException $e) { }
 	}
 
 

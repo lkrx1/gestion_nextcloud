@@ -188,6 +188,21 @@ export function listProduit(lp, id, produitid) {
 }
 
 /**
+ * Get list of product by id_devis
+ */
+export function getProduitsByIdDevis(id_devis) {
+    var my_data = { numdevis: id_devis };
+    
+    return $.ajax({
+        url: baseUrl + '/getProduitsById',
+        type: 'POST',
+        async: false,
+        contentType: 'application/json',
+        data: JSON.stringify(my_data)
+    })
+}
+
+/**
  * Get a product in database using id
  */
  export function getProduitsById() {
@@ -241,7 +256,22 @@ export function saveNextcloud(myData) {
       showMessage(t('gestion', 'There is an error'));
       error(response);
     });
-  };
+};
+
+export function refreshFEC() {
+    var oReq = new XMLHttpRequest();
+    oReq.open('GET', baseUrl + '/refreshFEC', true);
+    oReq.setRequestHeader("Content-Type", "application/json");
+    oReq.setRequestHeader("requesttoken", oc_requesttoken);
+    oReq.onload = function(e){
+        if (this.status == 200) {
+            showSuccess(t('gestion', 'Save in')+' '+JSON.parse(this.response)['name']+'\n'+t('gestion','(do not forget to show hidden folders)'));
+        }else{
+            showError(this.response);
+        }
+    };
+    oReq.send();
+}
 
   export function getMailServerFrom(input) {
     var oReq = new XMLHttpRequest();

@@ -187,6 +187,14 @@ export function getGlobal(total) {
     })
 }
 
+export function getGlobalPromise() {
+    return $.ajax({
+        url: baseUrl + '/getConfiguration',
+        type: 'PROPFIND',
+        contentType: 'application/json',
+    })
+}
+
 /**
  * //@
  * @param {*} response 
