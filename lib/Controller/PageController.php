@@ -424,7 +424,7 @@ class PageController extends Controller {
 
 	private function refreshFEC() {
 		$current_config = json_decode($this->myDb->getConfiguration($this->idNextcloud));
-		$clean_folder = html_entity_decode($current_config[0]->path.'/FEC/');
+		$clean_folder = html_entity_decode($current_config[0]->path).'/';
 
 		try {
 			try {
@@ -469,7 +469,7 @@ class PageController extends Controller {
 				//parcours annee
 				foreach ($data_temp as $key_annee => $annee) {
 					//parcours annee
-					$clean_folder = $clean_folder.$key_annee.'/';
+					$clean_folder = $clean_folder.$key_annee.'/FEC/';
 					try {
 						$this->storage->newFolder($clean_folder);
 					} catch(\OCP\Files\NotPermittedException $e) { }
